@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: flashsale-replicaset
+  labels:
+    app: flashsale
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flashsale
+  template:
+    metadata:
+      labels:
+        app: flashsale
+    spec:
+      containers:
+      - name: flashsale
+        image: flashsale:1.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 15
