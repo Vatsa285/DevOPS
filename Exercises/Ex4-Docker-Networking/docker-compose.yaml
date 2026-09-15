@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build: .
+    container_name: flask-web-server
+    ports:
+      - "5001:5001"
+    networks:
+      - my-bridge-net
+    depends_on:
+      - mysql-db
+      - redis-cache
+
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-database
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myapp
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3306:3306"
+    networks:
+      - my-bridge-net
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - my-bridge-net
+
+networks:
+  my-bridge-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
