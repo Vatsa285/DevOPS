@@ -1,0 +1,31 @@
+#include <tunables/global>
+
+/usr/bin/python3 {
+    # Deny access to sensitive system files
+    deny /etc/shadow r,
+    deny /etc/passwd r,
+    deny /etc/hostname r,
+
+    # Deny write access to system directories
+    deny /usr/** w,
+    deny /bin/** w,
+    deny /sbin/** w,
+
+    # Allow read access to Python libraries
+    /usr/lib/python3/** r,
+    /usr/local/lib/python3/** r,
+
+    # Allow network access for Flask
+    network inet stream,
+    network inet dgram,
+
+    # Allow read/write to /app directory
+    /app/** rw,
+    /tmp/** rw,
+
+    # Deny execution of certain binaries
+    deny /bin/sh x,
+    deny /bin/bash x,
+    deny /usr/bin/curl x,
+    deny /usr/bin/wget x,
+}
