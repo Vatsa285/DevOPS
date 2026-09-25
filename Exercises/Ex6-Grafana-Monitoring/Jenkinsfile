@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Setup') {
+            steps {
+                echo 'Installing Python dependencies...'
+                sh 'pip3 install prometheus-client'
+            }
+        }
+
+        stage('Start Metrics Server') {
+            steps {
+                echo 'Starting delivery metrics simulator...'
+                sh 'nohup python3 delivery_metrics.py &'
+                sh 'sleep 5'
+                echo 'Metrics server started on port 8000'
+            }
+        }
+
+        stage('Start Prometheus') {
+            steps {
+                echo 'Starting Prometheus...'
+                sh '''
+                docker run -d --name prometheus \
+                    -p 9090:9090 \
+                    -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+                    -v $(pwd)/alerts_rules.yml:/etc/prometheus/alerts_rules.yml \
+                    prom/prometheus
+                '''
+                sh 'sleep 10'
+                echo 'Prometheus started on port 9090'
+            }
+        }
+
+        stage('Start Grafana') {
+            steps {
+                echo 'Starting Grafana...'
+                sh '''
+                docker run -d --name grafana \
+                    -p 3000:3000 \
+                    grafana/grafana
+                '''
+                sh 'sleep 10'
+                echo 'Grafana started on port 3000'
+                echo 'Access Grafana at http://localhost:3000 (admin/admin)'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                echo 'Verifying services...'
+                sh 'curl -s http://localhost:8000/metrics | head -5'
+                sh 'curl -s http://localhost:9090/api/v1/targets | python3 -m json.tool'
+                echo 'All services are running!'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed. Services are running.'
+            echo 'Grafana: http://localhost:3000'
+            echo 'Prometheus: http://localhost:9090'
+            echo 'Metrics: http://localhost:8000/metrics'
+        }
+    }
+}

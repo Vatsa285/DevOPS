@@ -1,0 +1,29 @@
+groups:
+  - name: delivery_alerts
+    rules:
+      - alert: HighPendingDeliveries
+        expr: pending_deliveries > 15
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of pending deliveries"
+          description: "Pending deliveries have exceeded 15. Current value: {{ $value }}"
+
+      - alert: LowDeliveryRate
+        expr: total_deliveries < 50
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low total delivery rate detected"
+          description: "Total deliveries dropped below 50. Current value: {{ $value }}"
+
+      - alert: HighDeliveryTime
+        expr: rate(average_delivery_time_sum[5m]) / rate(average_delivery_time_count[5m]) > 35
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Average delivery time is too high"
+          description: "Average delivery time exceeds 35 seconds."
