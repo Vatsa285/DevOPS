@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                echo 'Cloning repository...'
+                git branch: 'main', url: 'https://github.com/Vatsa285/DevOPS.git'
+            }
+        }
+
+        stage('Execute Script') {
+            steps {
+                echo 'Running hello-world.sh...'
+                sh 'chmod +x Exercises/Ex8-Jenkins-Hello-World/hello-world.sh'
+                sh './Exercises/Ex8-Jenkins-Hello-World/hello-world.sh'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                echo 'Build completed successfully!'
+                echo "Build Number: ${env.BUILD_NUMBER}"
+                echo "Build URL: ${env.BUILD_URL}"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Hello World job succeeded!'
+        }
+        failure {
+            echo 'Hello World job failed!'
+        }
+    }
+}
