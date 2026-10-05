@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Creating virtual environment and installing dependencies...'
+                sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install -r requirements.txt
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh '''
+                . venv/bin/activate
+                python3 -m unittest discover -s .
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application...'
+                sh '''
+                mkdir -p ${WORKSPACE}/python-app-deploy
+                cp ${WORKSPACE}/app.py ${WORKSPACE}/python-app-deploy/
+                cp ${WORKSPACE}/requirements.txt ${WORKSPACE}/python-app-deploy/
+                '''
+            }
+        }
+        stage('Run Application') {
+            steps {
+                echo 'Starting application (test run)...'
+                sh '''
+                . venv/bin/activate
+                timeout 5 python3 app.py || true
+                '''
+                echo 'Application test run completed.'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Multi-Stage Pipeline completed successfully!'
+            echo 'All stages passed: Build → Test → Deploy → Run'
+        }
+        failure {
+            echo 'Pipeline failed! Check the logs for details.'
+        }
+        always {
+            echo "Build Number: ${env.BUILD_NUMBER}"
+            echo "Build Status: ${currentBuild.currentResult}"
+        }
+    }
+}
