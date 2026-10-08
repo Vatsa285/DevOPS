@@ -1,0 +1,5 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY shopping_cart.py .
+RUN pip install --no-cache-dir flask gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:80", "shopping_cart:app", "--workers", "1"]
