@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                echo 'Cloning repository...'
+                git branch: 'main', url: 'https://github.com/Vatsa285/DevOPS.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building Docker image...'
+                dir('Assignments/Assignment2-TreasureBook') {
+                    sh 'docker build -t treasurebook:1.0 .'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running unit tests...'
+                dir('Assignments/Assignment2-TreasureBook') {
+                    sh '''
+                    pip install -r requirements.txt
+                    python -m unittest test_app.py -v
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying to Kubernetes...'
+                dir('Assignments/Assignment2-TreasureBook') {
+                    sh 'kubectl apply -f k8s-deployment.yaml'
+                    sh 'kubectl rollout status deployment/treasurebook'
+                }
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                echo 'Verifying deployment...'
+                sh 'kubectl get pods -l app=treasurebook'
+                sh 'kubectl get service treasurebook-service'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'TreasureBook deployed successfully!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
