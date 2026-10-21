@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: assessment-a-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - assessment-a-net
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    container_name: assessment-a-web
+    restart: unless-stopped
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: assessment_a
+    ports:
+      - "5000:5000"
+    networks:
+      - assessment-a-net
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/health')\""]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  assessment-a-net:
+    driver: bridge
+
+volumes:
+  mongo-data:

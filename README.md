@@ -19,7 +19,9 @@ This repository contains completed exercises and assignments from the DevOps Lab
 ├── Assignments/
 │   ├── Assignment1-Docker-LLM-FineTune/
 │   ├── Assignment2-TreasureBook/
-│   └── Assignment3-VisualCraft-AI/
+│   ├── Assignment3-VisualCraft-AI/
+│   ├── Assessment1-OptionA-Dockerized-CRUD/
+│   └── Assessment1-OptionB-AppArmor-Auth/
 └── README.md
 ```
 
@@ -45,6 +47,13 @@ This repository contains completed exercises and assignments from the DevOps Lab
 | 1 | Docker LLM Fine-Tune & Deploy | Fine-tune an LLM and deploy as Docker container |
 | 2 | TreasureBook | DevOps pipeline for a book application |
 | 3 | VisualCraft AI | AI-powered artistic application with DevOps |
+
+## BMS Assessment 1 Options
+
+| Option | Project | Requirements Covered |
+|--------|---------|----------------------|
+| A | Dockerized CRUD Application | Flask CRUD, MongoDB volume, Docker SDK networking and health restart |
+| B | Secured Auth Application | Registration/login, MongoDB volume, AppArmor, Docker SDK verification and health monitoring |
 
 ## Tools & Technologies Used
 
