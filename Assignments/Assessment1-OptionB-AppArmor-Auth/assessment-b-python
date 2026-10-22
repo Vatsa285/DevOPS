@@ -1,0 +1,25 @@
+#include <tunables/global>
+
+profile assessment-b-python flags=(attach_disconnected,mediate_deleted) {
+    network inet stream,
+    network inet dgram,
+    capability net_bind_service,
+
+    /app/** rwix,
+    /usr/local/bin/python* rix,
+    /usr/local/bin/gunicorn rix,
+    /usr/local/lib/** r,
+    /lib/** r,
+    /lib64/** r,
+    /etc/hosts r,
+    /etc/hostname r,
+    /etc/resolv.conf r,
+    /tmp/** rw,
+
+    deny /etc/shadow r,
+    deny /etc/gshadow r,
+    deny /var/** w,
+    deny /usr/bin/curl x,
+    deny /usr/bin/wget x,
+    deny /bin/bash x,
+}

@@ -1,0 +1,6 @@
+Flask>=3.0,<4.0
+pymongo>=4.8,<5.0
+werkzeug>=3.0,<4.0
+gunicorn>=22.0,<24.0
+docker>=7.0,<8.0
+pytest>=8.0,<9.0
